@@ -1,0 +1,61 @@
+﻿@page "/"
+
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+
+
+<EditForm Model="@item" OnValidSubmit="@HandleSubmit">
+    <InputText @bind-Value="item.Name" placeholder="Enter something..." />
+    <button type="submit">Submit</button>
+</EditForm>
+
+<p> @message </p>
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var todo in items)
+        {
+            <tr>
+                <td>@todo.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    //private FormModel formModel = new FormModel();
+    private TodoItem item = new TodoItem();
+    private TodoItemDatabase DatabaseItem = new TodoItemDatabase();
+
+    private string message = string.Empty;
+
+    private List<TodoItem> items = new List<TodoItem>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await DatabaseItem.GetItems();
+    }
+
+
+    private async void HandleSubmit()
+    {
+        int res = await DatabaseItem.SaveItemAsync(item);
+        if(res == 0)
+        {
+            message = "Can't Add the item";
+        }
+
+        items = await DatabaseItem.GetItems();
+    }
+}
